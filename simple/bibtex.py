@@ -25,12 +25,8 @@
 # *
 # **************************************************************************
 """
-Bibtex string file for Simple package.
-"""
 
-_bibtexStr = """
-
-@Article{Elmlund2010,
+@article{Elmlund2010,
   Title                    = {Ab initio structure determination from electron microscopic images of single molecules coexisting in different functional states.},
   Author                   = {Elmlund, D. and Davis, R. and Elmlund, H.},
   Journal                  = {Structure},
@@ -46,7 +42,7 @@ _bibtexStr = """
   Url                      = {http://dx.doi.org/10.1016/j.str.2010.06.001}
 }
 
-@Article{Elmlund2012,
+@article{Elmlund2012,
   Title                    = {SIMPLE: Software for ab initio reconstruction of heterogeneous single-particles.},
   Author                   = {Elmlund, D. and Elmlund, H.},
   Journal                  = {J Struct Biol},
@@ -62,7 +58,7 @@ _bibtexStr = """
   Url                      = {http://dx.doi.org/10.1016/j.jsb.2012.07.010}
 }
 
-@Article{Elmlund2013,
+@article{Elmlund2013,
   Title                    = {PRIME: probabilistic initial {3D} model generation for single-particle cryo-electron microscopy.},
   Author                   = {Elmlund, Hans and Elmlund, Dominika and Bengio, Samy},
   Journal                  = {Structure},
@@ -84,7 +80,3 @@ _bibtexStr = """
 }
 
 """
-
-from pyworkflow.utils import parseBibTex
-
-_bibtex = parseBibTex(_bibtexStr)  

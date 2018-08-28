@@ -27,100 +27,92 @@
 import os
 from glob import glob
 
+import pyworkflow.em as em
 import pyworkflow.protocol.params as params
-from pyworkflow.utils import commandExists
 from pyworkflow.utils.path import cleanPath, cleanPattern
 
-import pyworkflow.em as em  
 import simple
+from simple.constants import *
 
-SIMPLE_HOME = 'SIMPLE_HOME'
-
-SIMPLE_PRIME = "simple_prime"
 
 
 class ProtPrime(em.ProtInitialVolume):
     """ Produces one or several initial volumes using simple prime """
     _label = 'prime'
 
-    @classmethod
-    def validateInstallation(cls):
-        """ This function will be used to check if package is properly installed."""
-        missingPaths = ["%s: %s" % (var, os.environ[var])
-                        for var in [SIMPLE_HOME]
-                        if not os.path.exists(os.environ[var])]
-
-        if missingPaths:
-            return ["Missing variables:"] + missingPaths
-        else:
-            return []  # No errors
-
-
-    #--------------------------- DEFINE param functions --------------------------------------------
-    
+    # --------------------------- DEFINE param functions ----------------------
     def _defineParams(self, form):
         form.addSection('Input')
-        form.addParam('inputClasses', params.PointerParam, label="Input classes", important=True, 
+        form.addParam('inputClasses', params.PointerParam,
+                      label="Input classes", important=True,
                       pointerClass='SetOfClasses2D, SetOfAverages',
-                      help='Select the input classes2D from the project.\n'
-                           'It should be a SetOfClasses2D class with class representative')
-        form.addParam('symmetryGroup', params.TextParam, default='c1',
+                      help='Select either a SetOfClasses2D or a '
+                           'SetOfAverages from the project. ')
+        form.addParam('symmetryGroup', params.TextParam,
+                      default='c1',
                       label="Symmetry group",
                       help='cn or dn. For icosahedral viruses, use c5. \n'
                            'If no symmetry is present, give c1.')  
-        form.addParam('Nvolumes', params.IntParam, default=1, 
+        form.addParam('Nvolumes', params.IntParam,
+                      default=1,
                       label='Number of volumes', 
                       help="Number of volumes to reconstruct")
-        form.addParam('maximumShift', params.IntParam, default=0, 
+        form.addParam('maximumShift', params.IntParam,
+                      default=0,
                       expertLevel=params.LEVEL_ADVANCED,
-                      label='Maximum shift (px):', 
+                      label='Maximum shift (px)',
                       help="Set to 0 for free shift search")
-        form.addParam('shiftStep', params.IntParam, default=1, 
+        form.addParam('shiftStep', params.IntParam,
+                      default=1,
                       expertLevel=params.LEVEL_ADVANCED,
-                      label='Shift step (px):', 
+                      label='Shift step (px)',
                       help="Step for exhaustive shift search")
-        form.addParam('outerMask', params.FloatParam, default=-1, 
+        form.addParam('outerMask', params.FloatParam,
+                      default=-1,
                       expertLevel=params.LEVEL_ADVANCED,
-                      label='Outer mask radius (px):', 
+                      label='Outer mask radius (px)',
                       help="Set to -1 for half the image size")
-        form.addParam('dynamicFilter', params.BooleanParam, default=False, 
+        form.addParam('dynamicFilter', params.BooleanParam,
+                      default=False,
                       expertLevel=params.LEVEL_ADVANCED,
-                      label='Dynamic filtering:', 
+                      label='Dynamic filtering?',
                       help="Let the program estimate the maximum resolution")
-        form.addParam('maxResolution', params.FloatParam, default=20, 
-                      expertLevel=params.LEVEL_ADVANCED, condition="not dynamicFilter",
-                      label='Max. Resolution (A):', 
+        form.addParam('maxResolution', params.FloatParam,
+                      default=20,
+                      expertLevel=params.LEVEL_ADVANCED,
+                      condition="not dynamicFilter",
+                      label='Max. resolution (A)',
                       help="The reconstructed volume will be limited to \n"
                            "this resolution in Angstroms.")
-        form.addParam('fractionParticles', params.FloatParam, default=1, 
+        form.addParam('fractionParticles', params.FloatParam,
+                      default=1,
                       expertLevel=params.LEVEL_ADVANCED,
-                      label='Fraction of particles:', 
+                      label='Fraction of particles',
                       help="Fraction of particles to include in the refinement. \n"
                            "1=all particles, 0.8=80% of particles")
-        form.addParam('molecularWeight', params.FloatParam, default=-1, 
+        form.addParam('molecularWeight', params.FloatParam,
+                      default=-1,
                       expertLevel=params.LEVEL_ADVANCED,
-                      label='Molecular weight (kD):', 
+                      label='Molecular weight (kDa)',
                       help="Molecular weight in kilodaltons, \n"
                            "set to -1 for no constraint")
-        form.addParam('keepIntermediate', params.BooleanParam, default=False, 
+        form.addParam('keepIntermediate', params.BooleanParam,
+                      default=False,
                       expertLevel=params.LEVEL_ADVANCED,
-                      label='Keep intermediate volumes',
+                      label='Keep intermediate volumes?',
                       help='Keep all volumes along iterations')
 
         form.addParallelSection(threads=8, mpi=0)
     
-    #--------------------------- INSERT steps functions --------------------------------------------
-    
+    # --------------------------- INSERT steps functions ----------------------
     def _insertAllSteps(self):
-        """ Mainly prepare the command line for calling simple prime program"""
-        
         self._insertFunctionStep('convertInputStep')
         self._insertFunctionStep('runPrime')
         if not self.keepIntermediate:
             self._insertFunctionStep('cleanPrime')
         self._insertFunctionStep('createOutputStep')        
 
-    #--------------------------- STEPS functions --------------------------------------------        
+    # --------------------------- STEPS functions -----------------------------
     def convertInputStep(self):
         self.inputClasses.get().writeStack(self._getExtraPath("classes.spi:stk"))
             
@@ -133,13 +125,16 @@ class ProtPrime(em.ProtInitialVolume):
 
         inputClasses = self.inputClasses.get()
         xdim, _, _ = inputClasses.getDimensions()
-        args = "stk=classes.spi box=%d smpd=%f pgrp=%s" % (xdim, inputClasses.getSamplingRate(), self.symmetryGroup)
+        args = "stk=classes.spi box=%d smpd=%f pgrp=%s" % (xdim,
+                                                           inputClasses.getSamplingRate(),
+                                                           self.symmetryGroup)
         
         if self.dynamicFilter:
             args += " dynlp=yes"
         else:
             args += " lp=%f" % self.maxResolution
-        args += " trs=%d trsstep=%d" % (self.maximumShift, self.shiftStep)
+        args += " trs=%d trsstep=%d" % (self.maximumShift,
+                                        self.shiftStep)
         args += " nstates=%d" % self.Nvolumes
         args += " nthr=%d" % self.numberOfThreads
         
@@ -150,14 +145,8 @@ class ProtPrime(em.ProtInitialVolume):
         if self.molecularWeight > 0:
             args += " mw=%f" % self.molecularWeight
         
-        self.runJob(SIMPLE_PRIME, args, cwd=self._getExtraPath())
-
-    def getLastIteration(self):
-        lastIter = 1
-        pattern = self._getExtraPath("recvol_state1_iter%d.spi")
-        while os.path.exists(pattern % lastIter):
-            lastIter += 1
-        return lastIter - 1
+        self.runJob(simple.Plugin.getProgram(), args,
+                    cwd=self._getExtraPath())
 
     def cleanPrime(self):
         self._enterDir(self._getExtraPath())
@@ -166,7 +155,7 @@ class ProtPrime(em.ProtInitialVolume):
         cleanPattern("startvol_state*.spi")
         # Get last iteration
         for i in range(1, self.getLastIteration()):
-            cleanPattern("recvol_state*_iter%d.spi"%i)
+            cleanPattern("recvol_state*_iter%d.spi" % i)
         self._leaveDir()
     
     def createOutputStep(self):
@@ -183,24 +172,19 @@ class ProtPrime(em.ProtInitialVolume):
         else:
             vol = self._createSetOfVolumes()
             vol.setSamplingRate(self.inputClasses.get().getSamplingRate())
-            fnVolumes=glob(self._getExtraPath('recvol_state*_iter%d.spi') % lastIter)
+            fnVolumes = glob(self._getExtraPath('recvol_state*_iter%d.spi') % lastIter)
             fnVolumes.sort()
             for fnVolume in fnVolumes:
-                aux=em.Volume()
+                aux = em.Volume()
                 aux.setLocation(fnVolume)
                 vol.append(aux)
             self._defineOutputs(outputVolumes=vol)
 
         self._defineSourceRelation(self.inputClasses, vol)
 
-    #--------------------------- INFO functions --------------------------------------------
+    # --------------------------- INFO functions ------------------------------
     def _validate(self):
-        from simple import getEnviron
         errors = []
-        getEnviron()
-        prime = os.environ[SIMPLE_HOME]
-        if not os.path.exists(prime):
-            errors.append('Missing %s' % prime)
         return errors
 
     def _summary(self):
@@ -209,12 +193,18 @@ class ProtPrime(em.ProtInitialVolume):
         summary.append("Starting from: %d random volumes" % self.Nvolumes )
         return summary
     
-    def _citations(self):
-        return ['Elmlund2013']
-    
     def _methods(self):
         if self.inputClasses.get() is not None:
-            retval="We used *simple_prime* program [Elmlund2013] to produce an initial volume from the set of classes %s."
+            retval = "We used *simple_prime* program [Elmlund2013] to produce " \
+                     "an initial volume from the set of classes %s."
             return [retval % self.getObjectTag('inputClasses')]
         else:
             return []
+
+    # -------------------------- UTILS functions ------------------------------
+    def getLastIteration(self):
+        lastIter = 1
+        pattern = self._getExtraPath("recvol_state1_iter%d.spi")
+        while os.path.exists(pattern % lastIter):
+            lastIter += 1
+        return lastIter - 1

@@ -1,8 +1,8 @@
 # **************************************************************************
 # *
-# * Authors:     Carlos Oscar Sorzano (coss@cnb.csic.es)
+# * Authors:     Grigory Sharov (gsharov@mrc-lmb.cam.ac.uk)
 # *
-# * Unidad de  Bioinformatica of Centro Nacional de Biotecnologia , CSIC
+# * MRC Laboratory of Molecular Biology (MRC-LMB)
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -24,21 +24,5 @@
 # *
 # **************************************************************************
 
-import os
-
-from pyworkflow.utils import Environ
-
-
-
-def getEnviron():
-    """ Create the needed environment for Xmipp programs. """
-    environ = Environ(os.environ)
-    SIMPLEBIN = os.path.join(os.environ['SIMPLE_HOME'], 'bin')
-    environ.update({
-                    'SIMPLEBIN': SIMPLEBIN,
-                    'SIMPLEPATH': os.environ['SIMPLE_HOME'],
-                    'SIMPLESYS': os.environ['SIMPLE_HOME'],
-                    'PATH': SIMPLEBIN + os.pathsep + os.path.join(os.environ['SIMPLE_HOME'], 'apps')
-                    }, 
-                   position=Environ.BEGIN)
-    return environ
+SIMPLE_PRIME = 'simple_prime'
+SIMPLE_HOME = 'SIMPLE_HOME'
