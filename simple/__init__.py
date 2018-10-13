@@ -69,4 +69,10 @@ class Plugin(pyworkflow.em.Plugin):
 
         return os.path.join(os.environ[SIMPLE_HOME], 'bin', SIMPLE_PRIME)
 
+    @classmethod
+    def defineBinaries(cls, env):
+        env.addPackage('simple', version='2.1',
+                       tar='simple2.tgz',
+                       default=True)
+
 pyworkflow.em.Domain.registerPlugin(__name__)
