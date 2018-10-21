@@ -24,5 +24,5 @@
 # *
 # **************************************************************************
 
-SIMPLE_PRIME = 'simple_prime'
+SIMPLE_PRIME = 'SIMPLE_PRIME'
 SIMPLE_HOME = 'SIMPLE_HOME'

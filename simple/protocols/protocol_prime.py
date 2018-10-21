@@ -146,7 +146,8 @@ class ProtPrime(em.ProtInitialVolume):
             args += " mw=%f" % self.molecularWeight
         
         self.runJob(simple.Plugin.getProgram(), args,
-                    cwd=self._getExtraPath())
+                    cwd=self._getExtraPath(),
+                    env=simple.Plugin.getEnviron())
 
     def cleanPrime(self):
         self._enterDir(self._getExtraPath())

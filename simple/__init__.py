@@ -44,18 +44,19 @@ class Plugin(pyworkflow.em.Plugin):
     @classmethod
     def _defineVariables(cls):
         cls._defineEmVar(SIMPLE_HOME, 'simple-2.1')
+        cls._defineVar(SIMPLE_PRIME, 'simple_prime')
 
     @classmethod
     def getEnviron(cls):
         """ Return the environ settings to run Simple programs. """
         environ = pwutils.Environ(os.environ)
 
-        SIMPLEBIN = os.path.join(os.environ[SIMPLE_HOME], 'bin')
+        SIMPLEBIN = cls.getHome('bin')
         environ.update({
             'SIMPLEBIN': SIMPLEBIN,
-            'SIMPLEPATH': os.environ[SIMPLE_HOME],
-            'SIMPLESYS': os.environ[SIMPLE_HOME],
-            'PATH': SIMPLEBIN + os.pathsep + os.path.join(os.environ[SIMPLE_HOME], 'apps')
+            'SIMPLEPATH': cls.getHome(),
+            'SIMPLESYS': cls.getHome(),
+            'PATH': SIMPLEBIN + os.pathsep + cls.getHome('apps')
         },
             position=pwutils.Environ.BEGIN)
 
@@ -64,10 +65,7 @@ class Plugin(pyworkflow.em.Plugin):
     @classmethod
     def getProgram(cls):
         """ Return the simple_prime binary that will be used. """
-        if SIMPLE_HOME not in os.environ:
-            return None
-
-        return os.path.join(os.environ[SIMPLE_HOME], 'bin', SIMPLE_PRIME)
+        return os.path.join(cls.getHome('bin'), cls.getVar(SIMPLE_PRIME))
 
     @classmethod
     def defineBinaries(cls, env):
