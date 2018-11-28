@@ -25,3 +25,6 @@
 # **************************************************************************
 
 from protocol_prime import ProtPrime
+from protocol_unblur import ProtUnblur
+from protocol_Prime2D import ProtPrime2D
+from protocol_init3D import ProtInit3D

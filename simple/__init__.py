@@ -39,11 +39,11 @@ _references = ['Elmlund2013']
 class Plugin(pyworkflow.em.Plugin):
     _homeVar = SIMPLE_HOME
     _pathVars = [SIMPLE_HOME]
-    _supportedVersions = ['2.1']
+    _supportedVersions = ['2.5']
 
     @classmethod
     def _defineVariables(cls):
-        cls._defineEmVar(SIMPLE_HOME, 'simple-2.1')
+        cls._defineEmVar(SIMPLE_HOME, 'simple-2.5')
         cls._defineVar(SIMPLE_PRIME, 'simple_prime')
 
     @classmethod
@@ -69,7 +69,7 @@ class Plugin(pyworkflow.em.Plugin):
 
     @classmethod
     def defineBinaries(cls, env):
-        env.addPackage('simple', version='2.1',
+        env.addPackage('simple', version='2.5',
                        tar='simple2.tgz',
                        default=True)
 
