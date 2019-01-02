@@ -34,7 +34,7 @@ class TestSimpleBase(BaseTest):
     
     def runInitialModel(self, samplingRate, symmetry, 
                         numberOfIterations, numberOfModels):
-        print "Import Set of averages"
+        print("Import Set of averages")
         protImportAvg = self.newProtocol(ProtImportAverages, 
                                          filesPath=self.averages, 
                                          checkStack=True, 
@@ -43,7 +43,7 @@ class TestSimpleBase(BaseTest):
         self.assertIsNotNone(protImportAvg.getFiles(),
                              "There was a problem with the import")
 
-        print "Run Simple"
+        print("Run Simple")
         protIniModel = self.newProtocol(ProtPrime,
                                         symmetry=symmetry,
                                         numberOfIterations=numberOfIterations,
