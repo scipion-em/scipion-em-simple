@@ -24,14 +24,15 @@
 
 import os
 from pyworkflow import VERSION_1_1
-from pyworkflow.protocol.params import IntParam, PointerParam, EnumParam, FileParam
-from pyworkflow.em.protocol.protocol_micrographs import ProtMicrographs
+from pyworkflow.protocol.params import IntParam, PointerParam
+from pyworkflow.em.protocol import ProtClassify2D
 from pyworkflow.utils.path import cleanPath, makePath, moveFile
 from pyworkflow.em.convert import ImageHandler
-from pyworkflow.protocol.constants import STEPS_PARALLEL
-from pyworkflow.em.data import SetOfParticles, SetOfClasses2D
+from pyworkflow.protocol.constants import LEVEL_ADVANCED
+from pyworkflow.em.data import SetOfParticles
+import simple
 
-class ProtPrime2D(ProtMicrographs):
+class ProtPrime2D(ProtClassify2D):
     """
     Simultaneous 2D alignment and clustering
     
@@ -41,9 +42,8 @@ class ProtPrime2D(ProtMicrographs):
     _label = 'Prime2D'
     
     def __init__(self,**kwargs):
-        ProtMicrographs.__init__(self, **kwargs)
-        self.stepsExecutionMode = STEPS_PARALLEL
-    
+        ProtClassify2D.__init__(self, **kwargs)
+
     #--------------------------- DEFINE param functions -------------------------------
 
     def _defineParams(self, form):
@@ -52,18 +52,17 @@ class ProtPrime2D(ProtMicrographs):
                        label='Input Particles', important=True)
         form.addParam('mask', IntParam, default=36, label='Mask radius', help='Mask radius (in Pixels).')
         form.addParam('clusters', IntParam, default=5, label='Number of clusters')
-        form.addParallelSection(threads=4, mpi=1)
+        form.addParam('maxIter', IntParam, default=0, label='Iterations', help='maximum # iterations',
+                      expertLevel=LEVEL_ADVANCED)
+        form.addParallelSection(threads=4, mpi=0)
+
                 
     #--------------------------- INSERT steps functions -------------------------------
     
     def _insertAllSteps(self):
         self._insertFunctionStep("convertInput")
-        deps = []
-        particles = SetOfParticles(filename=self._getExtraPath("particles.mrc"))
-        particleName = particles.getFileName()
-        samplingRate = self.inputParticles.get().getSamplingRate()
-        deps.append(self._insertFunctionStep('prime2DStep', particleName, samplingRate, prerequisites=[]))
-        self._insertFunctionStep("createOutputStep", prerequisites=deps)
+        self._insertFunctionStep('prime2DStep')
+        self._insertFunctionStep("createOutputStep")
         
     #--------------------------- STEPS functions -------------------------------
     def convertInput(self):
@@ -71,7 +70,9 @@ class ProtPrime2D(ProtMicrographs):
         inputPart.writeStack(self._getExtraPath("particles.mrc"))
 
 
-    def prime2DStep(self,partFile,SamplingRate):
+    def prime2DStep(self):
+        partFile = self._getExtraPath("particles.mrc")
+        SamplingRate = self.inputParticles.get().getSamplingRate()
         partName = os.path.basename(partFile)
         partName = os.path.splitext(partName)[0]
         tmpDir = self._getTmpPath(partName)
@@ -79,22 +80,28 @@ class ProtPrime2D(ProtMicrographs):
 
         params = self.getP2DParams(partFile, SamplingRate)
 
-        self.runJob("simple_distr_exec", params, cwd=os.path.abspath(tmpDir))
+        self.runJob(simple.Plugin.distr_exec(), params, cwd=os.path.abspath(tmpDir), env=simple.Plugin.getEnviron())
 
         #Move output files to ExtraPath and rename them properly
         os.remove(os.path.abspath(self._getExtraPath("particles.mrc")))
         mvRoot1 = os.path.join(tmpDir, "cavgs_final.mrc")
         mvRoot2 = os.path.join(tmpDir,"prime2Ddoc_final.txt")
-        moveFile(mvRoot1, self._getExtraPath(partName + "_cavgs_final.mrc"))
+        # moveFile(mvRoot1, self._getExtraPath(partName + "_cavgs_final.mrc"))
+        ih = ImageHandler()
+        ih.convert(mvRoot1, self._getExtraPath(partName + "_cavgs_final.mrcs"))
         moveFile(mvRoot2, self._getExtraPath(partName + "_prime2Ddoc_final.txt"))
+        cleanPath(tmpDir)
 
 
     def getP2DParams(self, partF, SR):
         """Prepare the commmand line to call Prime2D program"""
         fn = os.path.abspath(partF)
         partitions = 1
-        params = ' prg=prime2D stk=%s smpd=%f msk=%d ncls=%d ctf=no nparts=%d nthr=1' % (fn, SR, self.mask.get(), self.clusters.get(),
-                                                                                         partitions)
+        params = ' prg=prime2D stk=%s smpd=%f msk=%d ncls=%d ctf=no nparts=%d nthr=%d' % (fn, SR, self.mask.get(), self.clusters.get(),
+                                                                                         partitions, self.numberOfThreads.get())
+
+        if self.maxIter.get() > 0:
+            params = params + (' maxits=%d' % self.maxIter.get())
 
         return params
 
@@ -154,7 +161,8 @@ class ProtPrime2D(ProtMicrographs):
 
     def _updateClass(self, item):
         classId = item.getObjId()
-        avgFile = self._getExtraPath('particles_cavgs_final.mrc')
+        item.setAlignment2D()
+        avgFile = self._getExtraPath('particles_cavgs_final.mrcs')
         rep = item.getRepresentative()
         rep.setSamplingRate(item.getSamplingRate())
         rep.setLocation(classId, avgFile)
