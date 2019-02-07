@@ -30,6 +30,7 @@ from pyworkflow.protocol.params import PointerParam
 from pyworkflow.em.protocol.protocol_micrographs import ProtMicrographs
 from pyworkflow.utils.path import cleanPath, makePath, moveFile
 from pyworkflow.protocol.constants import STEPS_PARALLEL
+import simple
 
 class ProtUnblur(ProtMicrographs):
     """
@@ -82,7 +83,7 @@ class ProtUnblur(ProtMicrographs):
 
         params = self.getUnblurParams(fnInput, samplingRate, mvName)
 
-        self.runJob("simple_distr_exec",params,cwd=os.path.abspath(tmpDir))
+        self.runJob(simple.Plugin.distr_exec(),params,cwd=os.path.abspath(tmpDir),env=simple.Plugin.getEnviron())
         moveFile(mvRoot+"_intg1.mrc",self._getExtraPath(mvName+".mrc"))
         moveFile(mvRoot+"_pspec1.mrc",self._getExtraPath(mvName+"_psd.mrc"))
         moveFile(mvRoot+"_thumb1.mrc",self._getExtraPath(mvName+"_thumb.mrc"))

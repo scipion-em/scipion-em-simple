@@ -39,7 +39,7 @@ _references = ['Elmlund2013']
 class Plugin(pyworkflow.em.Plugin):
     _homeVar = SIMPLE_HOME
     _pathVars = [SIMPLE_HOME]
-    _supportedVersions = ['2.5']
+    _supportedVersions = ['3.0']
 
     @classmethod
     def _defineVariables(cls):
@@ -51,12 +51,14 @@ class Plugin(pyworkflow.em.Plugin):
         """ Return the environ settings to run Simple programs. """
         environ = pwutils.Environ(os.environ)
 
-        SIMPLEBIN = cls.getHome('bin')
+        SIMPLEBIN = cls.getHome('build/bin')
+        SIMPLEPATH = cls.getHome('build')
+        PATH = '${'+SIMPLEPATH+'}/scripts:${'+SIMPLEPATH+'}/bin:${PATH}'
         environ.update({
             'SIMPLEBIN': SIMPLEBIN,
-            'SIMPLEPATH': cls.getHome(),
-            'SIMPLESYS': cls.getHome(),
-            'PATH': SIMPLEBIN + os.pathsep + cls.getHome('apps')
+            'SIMPLEPATH': SIMPLEPATH,
+            'SIMPLESYS': SIMPLEPATH,
+            'PATH': PATH,
         },
             position=pwutils.Environ.BEGIN)
 
@@ -68,9 +70,19 @@ class Plugin(pyworkflow.em.Plugin):
         return os.path.join(cls.getHome('bin'), cls.getVar(SIMPLE_PRIME))
 
     @classmethod
+    def distr_exec(cls):
+        """ Return the simple_prime binary that will be used. """
+        return os.path.join(cls.getHome('build/bin'), 'simple_distr_exec')
+
+    @classmethod
+    def sim_exec(cls):
+        """ Return the simple_prime binary that will be used. """
+        return os.path.join(cls.getHome('build/bin'), 'simple_exec')
+
+    @classmethod
     def defineBinaries(cls, env):
-        env.addPackage('simple', version='2.5',
-                       tar='simple2.tgz',
+        env.addPackage('simple-2.5', version='2.5',
+                       tar='simple2.5.tgz',
                        default=True)
 
 pyworkflow.em.Domain.registerPlugin(__name__)

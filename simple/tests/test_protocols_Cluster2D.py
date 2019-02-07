@@ -25,10 +25,10 @@ import os
 
 import pyworkflow.tests as tests
 
-from simple.protocols import ProtPrime2D
+from simple.protocols import ProtCluster2D
 from pyworkflow.em.data import SetOfMovies
 from pyworkflow.em.protocol import ProtImportParticles
-class TestPrime2DBase(tests.BaseTest):
+class TestCluster2DBase(tests.BaseTest):
     """This class checks if the protocol to call Prime2D
        works properly.
     """
@@ -36,7 +36,7 @@ class TestPrime2DBase(tests.BaseTest):
     def setUpClass(cls):
         tests.setupTestProject(cls)
         
-class TestPrime2D(TestPrime2DBase):
+class TestCluster2D(TestCluster2DBase):
     @classmethod    
     def setUpClass(cls):
         tests.setupTestProject(cls)
@@ -58,7 +58,7 @@ class TestPrime2D(TestPrime2DBase):
         return prot1
         
     def test_Prime2D(self):
-        prot2 = self.newProtocol(ProtPrime2D, clusters=10)
+        prot2 = self.newProtocol(ProtCluster2D, clusters=5)
         prot2.inputParticles.set(self.protImport.outputParticles)
         self.launchProtocol(prot2)
         

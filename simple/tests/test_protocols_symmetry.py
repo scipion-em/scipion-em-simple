@@ -26,11 +26,10 @@ import os
 
 import pyworkflow.tests as tests
 
-from simple.protocols import ProtInit3D
-from pyworkflow.em.data import SetOfMovies
-from pyworkflow.em.protocol import ProtImportAverages
+from simple.protocols import ProtSym
+from pyworkflow.em.protocol import ProtImportVolumes
 
-class TestInit3DBase(tests.BaseTest):
+class TestSymBase(tests.BaseTest):
     """This class checks if the protocol to call Unblur
        works properly.
     """
@@ -38,7 +37,7 @@ class TestInit3DBase(tests.BaseTest):
     def setUpClass(cls):
         tests.setupTestProject(cls)
         
-class TestInit3D(TestInit3DBase):
+class TestSym(TestSymBase):
     @classmethod    
     def setUpClass(cls):
         tests.setupTestProject(cls)
@@ -46,22 +45,23 @@ class TestInit3D(TestInit3DBase):
 
     @classmethod
     def runImportFromScipion(cls):
-        args = {'importFrom': ProtImportAverages.IMPORT_FROM_FILES,
-                'filesPath': '/media/david/linux/Documentos/CNB/TFG/simpleData/simple2.5tutorials/3_PRIME3D/dataFinal/',
-                'filesPattern': '*.mrcs',
+        args = {'importFrom': ProtImportVolumes.IMPORT_FROM_FILES,
+                'filesPath': '/media/david/linux/Documentos/CNB/TFG/simpleData/Symsrch_Data/',
+                'filesPattern': '*.mrc',
                 'amplitudConstrast': 0.1,
                 'sphericalAberration': 2.,
                 'voltage': 300,
-                'samplingRate': 2.43
+                'samplingRate': 2.68
                 }
-        prot1 = cls.newProtocol(ProtImportAverages,**args)
+        prot1 = cls.newProtocol(ProtImportVolumes,**args)
         prot1.setObjLabel('from files')
         cls.launchProtocol(prot1)
         return prot1
         
-    def test_Init3D(self):
-        prot2 = self.newProtocol(ProtInit3D, symmetry='c4')
-        prot2.inputClasses.set(self.protImport.outputAverages)
+    def test_Sym(self):
+        oritab = '/media/david/linux/Documentos/CNB/TFG/simpleData/Symsrch_Data/particles_projvol_oris.txt'
+        prot2 = self.newProtocol(ProtSym, orientations=oritab)
+        prot2.inputVol.set(self.protImport.outputVolume)
         self.launchProtocol(prot2)
         
         

@@ -32,14 +32,14 @@ from pyworkflow.protocol.constants import LEVEL_ADVANCED
 from pyworkflow.em.data import SetOfParticles
 import simple
 
-class ProtPrime2D(ProtClassify2D):
+class ProtCluster2D(ProtClassify2D):
     """
     Simultaneous 2D alignment and clustering
     
     To find more information about Simple.Prime2D go to:
     https://simplecryoem.com/tutorials.html
     """
-    _label = 'Prime2D'
+    _label = 'Cluster2D'
     
     def __init__(self,**kwargs):
         ProtClassify2D.__init__(self, **kwargs)
@@ -73,40 +73,38 @@ class ProtPrime2D(ProtClassify2D):
     def prime2DStep(self):
         partFile = self._getExtraPath("particles.mrc")
         SamplingRate = self.inputParticles.get().getSamplingRate()
+        kV = self.inputParticles.get().getAcquisition().getVoltage()
+        partitions = 1
         partName = os.path.basename(partFile)
         partName = os.path.splitext(partName)[0]
         tmpDir = self._getTmpPath(partName)
         makePath(tmpDir)
 
-        params = self.getP2DParams(partFile, SamplingRate)
+        paramsOri='prg=print_project_field oritype=ptcl2D > oritab.txt'
+        paramsImp = 'prg=import_particles cs=2.7 ctf=no fraca=0.1 kv=%f smpd=%f stk=%s' %(kV, SamplingRate, os.path.abspath(partFile))
+        paramsC2D = ' prg=cluster2D msk=%d ncls=%d nparts=%d nthr=%d' % (self.mask.get(), self.clusters.get(),
+                                                                      partitions, self.numberOfThreads.get())
+        if self.maxIter.get() > 0:
+            paramsC2D = paramsC2D + (' maxits=%d' % self.maxIter.get())
 
-        self.runJob(simple.Plugin.distr_exec(), params, cwd=os.path.abspath(tmpDir), env=simple.Plugin.getEnviron())
+        self.runJob(simple.Plugin.sim_exec(), 'prg=new_project projname=temp', cwd=os.path.abspath(tmpDir),env=simple.Plugin.getEnviron())
+        self.runJob(simple.Plugin.sim_exec(), paramsImp, cwd=os.path.abspath(tmpDir)+'/temp', env=simple.Plugin.getEnviron())
+        self.runJob(simple.Plugin.distr_exec(), paramsC2D, cwd=os.path.abspath(tmpDir)+'/temp', env=simple.Plugin.getEnviron())
+        self.runJob(simple.Plugin.sim_exec(), paramsOri, cwd=os.path.abspath(tmpDir)+'/temp', env=simple.Plugin.getEnviron())
 
         #Move output files to ExtraPath and rename them properly
+        lastIter = self.getLastIteration(tmpDir)
         os.remove(os.path.abspath(self._getExtraPath("particles.mrc")))
-        mvRoot1 = os.path.join(tmpDir, "cavgs_final.mrc")
-        mvRoot2 = os.path.join(tmpDir,"prime2Ddoc_final.txt")
+        mvRoot1 = os.path.join(tmpDir+'/temp/2_cluster2D', "cavgs_iter%03d.mrc" %lastIter)
+        mvRoot2 = os.path.join(tmpDir+'/temp',"oritab.txt")
         # moveFile(mvRoot1, self._getExtraPath(partName + "_cavgs_final.mrc"))
         ih = ImageHandler()
         ih.convert(mvRoot1, self._getExtraPath(partName + "_cavgs_final.mrcs"))
-        moveFile(mvRoot2, self._getExtraPath(partName + "_prime2Ddoc_final.txt"))
+        moveFile(mvRoot2, self._getExtraPath(partName + "_oritab.txt"))
         cleanPath(tmpDir)
 
-
-    def getP2DParams(self, partF, SR):
-        """Prepare the commmand line to call Prime2D program"""
-        fn = os.path.abspath(partF)
-        partitions = 1
-        params = ' prg=prime2D stk=%s smpd=%f msk=%d ncls=%d ctf=no nparts=%d nthr=%d' % (fn, SR, self.mask.get(), self.clusters.get(),
-                                                                                         partitions, self.numberOfThreads.get())
-
-        if self.maxIter.get() > 0:
-            params = params + (' maxits=%d' % self.maxIter.get())
-
-        return params
-
     def createOutputStep(self):
-        fh=open(self._getExtraPath("particles_prime2Ddoc_final.txt"))
+        fh=open(self._getExtraPath("particles_oritab.txt"))
 
         lines = []
         for line in fh.readlines():
@@ -166,4 +164,11 @@ class ProtPrime2D(ProtClassify2D):
         rep = item.getRepresentative()
         rep.setSamplingRate(item.getSamplingRate())
         rep.setLocation(classId, avgFile)
+
+    def getLastIteration(self,tmpDir):
+        lastIter = 1
+        pattern = tmpDir+'/temp/2_cluster2D/cavgs_iter%03d.mrc'
+        while os.path.exists(pattern % lastIter):
+            lastIter += 1
+        return lastIter - 1
         
