@@ -31,6 +31,7 @@ from pyworkflow.em.protocol.protocol_micrographs import ProtMicrographs
 from pyworkflow.utils.path import cleanPath, makePath, moveFile
 from pyworkflow.protocol.constants import STEPS_PARALLEL
 import simple
+import time
 
 class ProtUnblur(ProtMicrographs):
     """
@@ -39,7 +40,7 @@ class ProtUnblur(ProtMicrographs):
     To find more information about Simple.Unblur go to:
     https://simplecryoem.com/tutorials.html
     """
-    _label = 'Unblur'
+    _label = 'Preprocess'
     
     def __init__(self,**kwargs):
         ProtMicrographs.__init__(self, **kwargs)
@@ -59,6 +60,8 @@ class ProtUnblur(ProtMicrographs):
         self.partitions=1
         self.kV = self.inputMV.getAcquisition().getVoltage()
         self.dose = self.inputMV.getAcquisition().getDosePerFrame()
+        self.fraca = self.inputMV.getAcquisition().getAmplitudeContrast()
+        self.cs = self.inputMV.getAcquisition().getSphericalAberration()
 
         deps = []
         for movie in self.inputMV:
@@ -69,7 +72,6 @@ class ProtUnblur(ProtMicrographs):
         
     #--------------------------- STEPS functions -------------------------------
     def unblurStep(self,mvF,samplingRate):
-        #movieName = self._getMovieName(movie)
         mvName = os.path.basename(mvF)
         mvName = os.path.splitext(mvName)[0]
         tmpDir = self._getTmpPath(mvName)
@@ -81,23 +83,20 @@ class ProtUnblur(ProtMicrographs):
         fhInput.write(os.path.abspath(mvF))
         fhInput.close()
 
-        params = self.getUnblurParams(fnInput, samplingRate, mvName)
+        paramsUnblur = ' prg=preprocess nparts=%d nthr=1' %(self.partitions)
+        paramsMovies = ' prg=import_movies filetab=%s cs=%f ctf=no fraca=%f kv=%d smpd=%f' %(fnInput,self.cs, self.fraca,
+                                                                                             self.kV, samplingRate)
 
-        self.runJob(simple.Plugin.distr_exec(),params,cwd=os.path.abspath(tmpDir),env=simple.Plugin.getEnviron())
-        moveFile(mvRoot+"_intg1.mrc",self._getExtraPath(mvName+".mrc"))
-        moveFile(mvRoot+"_pspec1.mrc",self._getExtraPath(mvName+"_psd.mrc"))
-        moveFile(mvRoot+"_thumb1.mrc",self._getExtraPath(mvName+"_thumb.mrc"))
+        self.runJob(simple.Plugin.sim_exec(), 'prg=new_project projname=temp', cwd=os.path.abspath(tmpDir),
+                    env=simple.Plugin.getEnviron())
+        self.runJob(simple.Plugin.sim_exec(), paramsMovies, cwd=os.path.abspath(tmpDir)+'/temp',env=simple.Plugin.getEnviron())
+        self.runJob(simple.Plugin.distr_exec(),paramsUnblur,cwd=os.path.abspath(tmpDir)+'/temp',env=simple.Plugin.getEnviron())
+
+        #Move output files to ExtraPath and rename them properly
+        mvRoot = os.path.join(tmpDir+'/temp/2_preprocess', mvName)
+        moveFile(mvRoot+"_intg.mrc",self._getExtraPath(mvName+".mrc"))
+        moveFile(mvRoot+"_pspec.mrc",self._getExtraPath(mvName+"_psd.mrc"))
         cleanPath(tmpDir)
-
-    def getUnblurParams(self, mvFile, SR, mvName):
-        """Prepare the commmand line to call unblur program"""
-        params = ' prg=unblur filetab=%s smpd=%f nparts=%d fbody=%s nthr=1' %(mvFile, SR, self.partitions, mvName)
-        if self.dose:
-            params = params + ' dose_rate=%f' %(self.dose)
-        if self.kV:
-            params = params + ' kv=%f' %(self.kV)
-
-        return params
 
     def createOutputStep(self):
         outputMics= self._createSetOfMicrographs()

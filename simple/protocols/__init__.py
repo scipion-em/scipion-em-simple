@@ -25,7 +25,7 @@
 # **************************************************************************
 
 from protocol_prime import ProtPrime
-from protocol_unblur import ProtUnblur
+from protocol_preprocess import ProtUnblur
 from protocol_Cluster2D import ProtCluster2D
 from protocol_init3D import ProtInit3D
 from protocol_symmetry import ProtSym

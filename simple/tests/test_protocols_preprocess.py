@@ -47,12 +47,12 @@ class TestUnblur(TestUnblurBase):
     @classmethod
     def runImportFromScipion(cls):
         args = {'importFrom': ProtImportMovies.IMPORT_FROM_FILES,
-                'filesPath': '/media/david/linux/Documentos/CNB/TFG/simpleData/relion13_tutorial/betagal/Micrographs/',
-                'filesPattern': '*.mrcs',
+                'filesPath': '/media/david/linux/Documentos/CNB/TFG/simpleData/simple2.5tutorials/1_DDD-movie-proc/data/',
+                'filesPattern': '*.mrc',
                 'amplitudConstrast': 0.1,
-                'sphericalAberration': 2.,
+                'sphericalAberration': 2.7,
                 'voltage': 300,
-                'samplingRate': 3.54
+                'samplingRate': 5.26
                 }
         prot1 = cls.newProtocol(ProtImportMovies,**args)
         prot1.setObjLabel('from files')
