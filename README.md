@@ -4,6 +4,14 @@
 
  Simple is a a program package for cryo-EM image processing, focusing on ab initio 3D reconstruction of low-symmetry single-particles. It is developed by [Hans Elmlund](http://simplecryoem.com).
 
+
  Supported versions of Simple: 3.0
+
+ ## Dependencies
+ We need libgfortran3
+ 
+```
+sudo apt install libgfortran3
+```
 
 ![build status](http://heisenberg.cnb.csic.es:9980/badges/simple_devel.svg "Build status")
