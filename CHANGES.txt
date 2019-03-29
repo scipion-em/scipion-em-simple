@@ -1,2 +1,2 @@
-13-October-2018 - Added PyPi files
+14-February-2019 - First implementation of Simple 3.0 in Scipion
 

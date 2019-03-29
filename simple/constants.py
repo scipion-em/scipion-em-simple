@@ -19,10 +19,9 @@
 # * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 # * 02111-1307  USA
 # *
-# *  All comments concerning this program package may be sent to the
-# *  e-mail address 'scipion@cnb.csic.es'
+# * All comments concerning this program package may be sent to the
+# * e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
 
-SIMPLE_PRIME = 'SIMPLE_PRIME'
-SIMPLE_HOME = 'SIMPLE_HOME'
+SIMPLE_HOME = 'SIMPLE-3.0'

@@ -1,6 +1,6 @@
 # **************************************************************************
 # *
-# * Authors:     Carlos Oscar Sorzano (coss@cnb.csic.es)
+# * Authors:     David Herreros
 # *
 # * Unidad de  Bioinformatica of Centro Nacional de Biotecnologia , CSIC
 # *
@@ -39,38 +39,48 @@ _references = ['Elmlund2013']
 class Plugin(pyworkflow.em.Plugin):
     _homeVar = SIMPLE_HOME
     _pathVars = [SIMPLE_HOME]
-    _supportedVersions = ['2.1']
+    _supportedVersions = ['3.0']
 
     @classmethod
     def _defineVariables(cls):
-        cls._defineEmVar(SIMPLE_HOME, 'simple-2.1')
-        cls._defineVar(SIMPLE_PRIME, 'simple_prime')
+        cls._defineEmVar(SIMPLE_HOME, 'SIMPLE-3.0')
 
     @classmethod
     def getEnviron(cls):
         """ Return the environ settings to run Simple programs. """
         environ = pwutils.Environ(os.environ)
 
-        SIMPLEBIN = cls.getHome('bin')
+        SIMPLEBIN = cls.getHome('build/bin')
+        SIMPLEPATH = cls.getHome('build')
+        PATH = '${'+SIMPLEPATH+'}/scripts:${'+SIMPLEPATH+'}/bin:${PATH}'
         environ.update({
             'SIMPLEBIN': SIMPLEBIN,
-            'SIMPLEPATH': cls.getHome(),
-            'SIMPLESYS': cls.getHome(),
-            'PATH': SIMPLEBIN + os.pathsep + cls.getHome('apps')
+            'SIMPLEPATH': SIMPLEPATH,
+            'SIMPLESYS': SIMPLEPATH,
+            'PATH': PATH,
         },
             position=pwutils.Environ.BEGIN)
 
         return environ
 
     @classmethod
-    def getProgram(cls):
+    def distr_exec(cls):
         """ Return the simple_prime binary that will be used. """
-        return os.path.join(cls.getHome('bin'), cls.getVar(SIMPLE_PRIME))
+        return os.path.join(cls.getHome('build/bin'), 'simple_distr_exec')
+
+    @classmethod
+    def sim_exec(cls):
+        """ Return the simple_prime binary that will be used. """
+        return os.path.join(cls.getHome('build/bin'), 'simple_exec')
 
     @classmethod
     def defineBinaries(cls, env):
-        env.addPackage('simple', version='2.1',
-                       tar='simple2.tgz',
-                       default=True)
+
+        simple_commands = [('mkdir build; cd build; cmake ../; make -j install', ['build/bin/gui'])]
+
+        env.addPackage('SIMPLE', version='3.0',
+                        tar='SIMPLE3.0.tgz',
+                        commands=simple_commands,
+                        default=True)
 
 pyworkflow.em.Domain.registerPlugin(__name__)
