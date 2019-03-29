@@ -27,7 +27,6 @@ import os
 import pyworkflow.tests as tests
 
 from simple.protocols import ProtUnblur
-from pyworkflow.em.data import SetOfMovies
 from pyworkflow.em.protocol import ProtImportMovies
 
 class TestUnblurBase(tests.BaseTest):
@@ -46,13 +45,14 @@ class TestUnblur(TestUnblurBase):
 
     @classmethod
     def runImportFromScipion(cls):
+        cls.dsMovies = tests.DataSet.getDataSet('riboMovies')
         args = {'importFrom': ProtImportMovies.IMPORT_FROM_FILES,
-                'filesPath': '/media/david/linux/Documentos/CNB/TFG/simpleData/simple2.5tutorials/1_DDD-movie-proc/data/',
-                'filesPattern': '*.mrc',
+                'filesPath': cls.dsMovies.getFile(''),
+                'filesPattern': '35_movie_gc_window.mrcs',
                 'amplitudConstrast': 0.1,
-                'sphericalAberration': 2.7,
+                'sphericalAberration': 2.0,
                 'voltage': 300,
-                'samplingRate': 5.26
+                'samplingRate': 2.37
                 }
         prot1 = cls.newProtocol(ProtImportMovies,**args)
         prot1.setObjLabel('from files')

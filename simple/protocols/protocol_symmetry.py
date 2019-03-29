@@ -85,12 +85,17 @@ class ProtSym(ProtMicrographs):
         mvRoot1 = os.path.join(tmpDir+'/temp/1_symmetry_test', "symmetry_test_output.txt")
         moveFile(mvRoot1, self._getExtraPath('point_group_symmetry_.txt'))
         cleanPath(tmpDir)
-
-    # def createOutputStep(self):
         
     #------------------------------- INFO functions ---------------------------------
     def _citations(self):
         cites = ['Elmlund2013']
         return cites
-        
-        
+
+    def _summary(self):
+        msgs = []
+        fnSummary = self._getExtraPath("point_group_symmetry_.txt")
+        if os.path.exists(fnSummary):
+            fh = open(fnSummary)
+            for line in fh.readlines():
+                msgs.append(line.strip())
+        return msgs

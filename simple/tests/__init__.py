@@ -25,7 +25,6 @@
 # **************************************************************************
 
 from test_protocols_preprocess import TestUnblur
-from test_workflow_simple import TestSimpleMDA
 from test_protocols_Cluster2D import TestCluster2D
 from test_protocols_init3D import TestInit3D
 from test_protocols_symmetry import TestSym

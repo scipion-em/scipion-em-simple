@@ -31,7 +31,6 @@ from pyworkflow.em.protocol.protocol_micrographs import ProtMicrographs
 from pyworkflow.utils.path import cleanPath, makePath, moveFile
 from pyworkflow.protocol.constants import STEPS_PARALLEL
 import simple
-import time
 
 class ProtUnblur(ProtMicrographs):
     """
@@ -83,14 +82,14 @@ class ProtUnblur(ProtMicrographs):
         fhInput.write(os.path.abspath(mvF))
         fhInput.close()
 
-        paramsUnblur = ' prg=preprocess nparts=%d nthr=1' %(self.partitions)
+        paramsUnblur = ' prg=preprocess nparts=%d nthr=%d' %(self.partitions,self.numberOfThreads.get())
         paramsMovies = ' prg=import_movies filetab=%s cs=%f ctf=no fraca=%f kv=%d smpd=%f' %(fnInput,self.cs, self.fraca,
                                                                                              self.kV, samplingRate)
 
         self.runJob(simple.Plugin.sim_exec(), 'prg=new_project projname=temp', cwd=os.path.abspath(tmpDir),
                     env=simple.Plugin.getEnviron())
-        self.runJob(simple.Plugin.sim_exec(), paramsMovies, cwd=os.path.abspath(tmpDir)+'/temp',env=simple.Plugin.getEnviron())
-        self.runJob(simple.Plugin.distr_exec(),paramsUnblur,cwd=os.path.abspath(tmpDir)+'/temp',env=simple.Plugin.getEnviron())
+        self.runJob(simple.Plugin.sim_exec(), paramsMovies, cwd=os.path.abspath(tmpDir)+'/temp', env=simple.Plugin.getEnviron())
+        self.runJob(simple.Plugin.distr_exec(), paramsUnblur, cwd=os.path.abspath(tmpDir)+'/temp', env=simple.Plugin.getEnviron())
 
         #Move output files to ExtraPath and rename them properly
         mvRoot = os.path.join(tmpDir+'/temp/2_preprocess', mvName)

@@ -44,13 +44,14 @@ class TestCluster2D(TestCluster2DBase):
 
     @classmethod
     def runImportFromScipion(cls):
+        cls.particles = tests.DataSet.getDataSet('nma')
         args = {'importFrom': ProtImportParticles.IMPORT_FROM_FILES,
-                'filesPath': '/media/david/linux/Documentos/CNB/TFG/simpleData/simple2.5tutorials/2_PRIME2D/data/',
-                'filesPattern': '*.mrc',
+                'filesPath': cls.particles.getFile('particles/'),
+                'filesPattern': '*.stk',
                 'amplitudConstrast': 0.1,
-                'sphericalAberration': 2.,
+                'sphericalAberration': 2.0,
                 'voltage': 300,
-                'samplingRate': 2.4312
+                'samplingRate': 1.0
                 }
         prot1 = cls.newProtocol(ProtImportParticles,**args)
         prot1.setObjLabel('from files')

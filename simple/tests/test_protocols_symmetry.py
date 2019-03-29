@@ -28,6 +28,7 @@ import pyworkflow.tests as tests
 
 from simple.protocols import ProtSym
 from pyworkflow.em.protocol import ProtImportVolumes
+from pyworkflow.tests import *
 
 class TestSymBase(tests.BaseTest):
     """This class checks if the protocol to call Unblur
@@ -45,13 +46,12 @@ class TestSym(TestSymBase):
 
     @classmethod
     def runImportFromScipion(cls):
+        cls.dsXmipp = tests.DataSet.getDataSet('xmipp_tutorial')
         args = {'importFrom': ProtImportVolumes.IMPORT_FROM_FILES,
-                'filesPath': '/media/david/linux/Documentos/CNB/TFG/simpleData/Symsrch_Data/',
-                'filesPattern': '*.mrc',
-                'amplitudConstrast': 0.1,
-                'sphericalAberration': 2.,
-                'voltage': 300,
-                'samplingRate': 2.68
+                'filesPath': cls.dsXmipp.getFile('volumes/'),
+                'filesPattern': 'volume_1_iter_002.mrc',
+                'setOrigCoord': False,
+                'samplingRate': 2.1,
                 }
         prot1 = cls.newProtocol(ProtImportVolumes,**args)
         prot1.setObjLabel('from files')

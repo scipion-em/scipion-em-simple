@@ -82,7 +82,7 @@ class ProtCluster2D(ProtClassify2D):
 
         paramsOri='prg=print_project_field oritype=ptcl2D > oritab.txt'
         paramsImp = 'prg=import_particles cs=2.7 ctf=no fraca=0.1 kv=%f smpd=%f stk=%s' %(kV, SamplingRate, os.path.abspath(partFile))
-        paramsC2D = ' prg=cluster2D msk=%d ncls=%d nparts=%d nthr=%d' % (self.mask.get(), self.clusters.get(),
+        paramsC2D = 'prg=cluster2D msk=%d ncls=%d nparts=%d nthr=%d' % (self.mask.get(), self.clusters.get(),
                                                                       partitions, self.numberOfThreads.get())
         if self.maxIter.get() > 0:
             paramsC2D = paramsC2D + (' maxits=%d' % self.maxIter.get())

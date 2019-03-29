@@ -46,13 +46,14 @@ class TestInit3D(TestInit3DBase):
 
     @classmethod
     def runImportFromScipion(cls):
+        cls.dsClass = tests.DataSet.getDataSet('groel')
         args = {'importFrom': ProtImportAverages.IMPORT_FROM_FILES,
-                'filesPath': '/media/david/linux/Documentos/CNB/TFG/simpleData/simple2.5tutorials/3_PRIME3D/dataFinal/',
-                'filesPattern': '*.mrcs',
+                'filesPath': cls.dsClass.getFile('classes/'),
+                'filesPattern': '*.stk',
                 'amplitudConstrast': 0.1,
-                'sphericalAberration': 2.,
+                'sphericalAberration': 7,
                 'voltage': 300,
-                'samplingRate': 2.43
+                'samplingRate': 1.0
                 }
         prot1 = cls.newProtocol(ProtImportAverages,**args)
         prot1.setObjLabel('from files')
@@ -60,7 +61,7 @@ class TestInit3D(TestInit3DBase):
         return prot1
         
     def test_Init3D(self):
-        prot2 = self.newProtocol(ProtInit3D, symmetry='c4')
+        prot2 = self.newProtocol(ProtInit3D, symmetry='c5')
         prot2.inputClasses.set(self.protImport.outputAverages)
         self.launchProtocol(prot2)
         

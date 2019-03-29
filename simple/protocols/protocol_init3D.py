@@ -26,12 +26,12 @@ import os, glob, shutil
 import pyworkflow.em as em
 from pyworkflow import VERSION_1_1
 from pyworkflow.protocol.params import IntParam, PointerParam, StringParam, EnumParam
-from pyworkflow.em.protocol.protocol_micrographs import ProtMicrographs
+# from pyworkflow.em.protocol.protocol_micrographs import ProtMicrographs
 from pyworkflow.utils.path import cleanPath, makePath, moveFile
 from pyworkflow.protocol.constants import LEVEL_ADVANCED
 import simple
 
-class ProtInit3D(ProtMicrographs):
+class ProtInit3D(em.ProtInitialVolume):
     """
     Ab initio reconstruction from Class Averages
     
@@ -41,7 +41,7 @@ class ProtInit3D(ProtMicrographs):
     _label = 'initial_3Dmodel'
     
     def __init__(self,**kwargs):
-        ProtMicrographs.__init__(self, **kwargs)
+        em.ProtInitialVolume.__init__(self, **kwargs)
 
     #--------------------------- DEFINE param functions -------------------------------
 
@@ -65,10 +65,10 @@ class ProtInit3D(ProtMicrographs):
     #--------------------------- STEPS functions -------------------------------
     def convertInput(self):
         inputPart = self.inputClasses.get()
-        inputPart.writeStack(self._getExtraPath("particles.mrc"))
+        inputPart.writeStack(self._getTmpPath("particles.mrc"))
 
     def init3DStep(self):
-        partFile = self._getExtraPath("particles.mrc")
+        partFile = self._getTmpPath("particles.mrc")
         SamplingRate = self.inputClasses.get().getSamplingRate()
         partName = os.path.basename(partFile)
         partName = os.path.splitext(partName)[0]
@@ -91,7 +91,6 @@ class ProtInit3D(ProtMicrographs):
         mvRoot2 = os.path.join(tmpDir+'/temp/2_initial_3Dmodel',"final_oris.txt")
         moveFile(mvRoot1, self._getExtraPath(partName + "_rec_final.mrc"))
         moveFile(mvRoot2, self._getExtraPath(partName + "_projvol_oris.txt"))
-        cleanPath(tmpDir)
 
     def createOutputStep(self):
         vol = em.Volume()
