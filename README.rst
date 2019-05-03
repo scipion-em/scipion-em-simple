@@ -36,5 +36,5 @@ Alternatively, in devel mode:
 
     scipion installp -p local/path/to/scipion-em-simple --devel
 
-![build status](http://heisenberg.cnb.csic.es:9980/badges/simple_devel.svg)
+.. image http://scipion-test.cnb.csic.es:9980/badges/simple_devel.svg
 
