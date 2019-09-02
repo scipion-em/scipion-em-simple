@@ -86,7 +86,6 @@ class ProtInit3D(em.ProtInitialVolume):
         self.runJob(simple.Plugin.distr_exec(), params3D, cwd=os.path.abspath(tmpDir)+'/temp', env=simple.Plugin.getEnviron())
 
         #Move output files to ExtraPath and rename them properly
-        os.remove(os.path.abspath(self._getExtraPath("particles.mrc")))
         mvRoot1 = os.path.join(tmpDir+'/temp/2_initial_3Dmodel', "rec_final.mrc")
         mvRoot2 = os.path.join(tmpDir+'/temp/2_initial_3Dmodel',"final_oris.txt")
         moveFile(mvRoot1, self._getExtraPath(partName + "_rec_final.mrc"))
