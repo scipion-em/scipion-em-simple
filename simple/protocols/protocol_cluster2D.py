@@ -39,7 +39,7 @@ class ProtCluster2D(ProtClassify2D):
     To find more information about Simple.Prime2D go to:
     https://simplecryoem.com/tutorials.html
     """
-    _label = 'Cluster2D'
+    _label = 'cluster2D'
     
     def __init__(self,**kwargs):
         ProtClassify2D.__init__(self, **kwargs)

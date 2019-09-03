@@ -37,7 +37,7 @@ import numpy as np
 
 class ProtRef3D(em.ProtRefine3D):
     """
-    Ab initio reconstruction from Class Averages
+    3D Refinement
     
     To find more information about Simple.Prime3D go to:
     https://simplecryoem.com/tutorials.html
@@ -51,11 +51,11 @@ class ProtRef3D(em.ProtRefine3D):
 
     def _defineParams(self, form):
         form.addSection(label='Input')
+        form.addParam('inputParticles', PointerParam, pointerClass='SetOfParticles', allowsNull=False,
+                      label='Input Particles', important=True)
         form.addParam('inputVol', PointerParam, label="Input volume",
                       important=True, pointerClass='Volume',
                       help="Input Volume")
-        form.addParam('inputParticles', PointerParam, pointerClass='SetOfParticles', allowsNull=False,
-                      label='Input Particles', important=True)
         form.addParam('mask', IntParam, default=80, label='Mask radius', help='Mask radius (in Pixels).')
         form.addParam('symmetry', StringParam, default='c5', important=True, label='Point-group symmetry',
                       help='cn or dn. For icosahedral viruses, use c5. \n If no symmetry is present, give c1.')
@@ -63,6 +63,8 @@ class ProtRef3D(em.ProtRefine3D):
                       label='Low pass limit', help='Low pass limit in normalized frequency (<0.5)')
         form.addParam('maxIter', IntParam, default=0, label='Iterations', help='maximum # iterations',
                       expertLevel=LEVEL_ADVANCED)
+        form.addParam('maxTrans', FloatParam, default=-1,label='Maximum shift',
+                      help='Maximum translational shift')
         form.addParallelSection(threads=4, mpi=0)
                 
     #--------------------------- INSERT steps functions -------------------------------
@@ -84,7 +86,6 @@ class ProtRef3D(em.ProtRefine3D):
         inputVol = self.inputVol.get()
         fnVol = os.path.abspath(self._getTmpPath("recvol_state_00.mrc"))
 
-        #For testing purposes
         copyFile(self._getTmpPath("recvol_state_00.mrc"),self._getTmpPath("recvol_state_00_even.mrc"))
         copyFile(self._getTmpPath("recvol_state_00.mrc"),self._getTmpPath("recvol_state_00_odd.mrc"))
 
@@ -112,6 +113,9 @@ class ProtRef3D(em.ProtRefine3D):
 
         if self.maxIter.get() > 0:
             paramsRef = paramsRef + (' maxits=%d' % self.maxIter.get())
+
+        if self.maxTrans.get() >= 0:
+            paramsRef = paramsRef + (' trs=%f' % self.maxTrans.get())
 
         paramsImp = 'prg=import_particles cs=2.7 ctf=no fraca=0.1 kv=%f smpd=%f stk=%s' % (
         kV, SamplingRate, os.path.abspath(partFile))

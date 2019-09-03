@@ -39,7 +39,7 @@ class ProtUnblur(ProtMicrographs):
     To find more information about Simple.Unblur go to:
     https://simplecryoem.com/tutorials.html
     """
-    _label = 'Preprocess'
+    _label = 'preprocess'
     
     def __init__(self,**kwargs):
         ProtMicrographs.__init__(self, **kwargs)
