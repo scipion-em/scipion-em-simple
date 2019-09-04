@@ -55,8 +55,8 @@ class Plugin(pyworkflow.em.Plugin):
         PATH = '${'+SIMPLEPATH+'}/scripts:${'+SIMPLEPATH+'}/bin:${PATH}'
         environ.update({
             'SIMPLEBIN': SIMPLEBIN,
-            'SIMPLEPATH': SIMPLEPATH,
-            'SIMPLESYS': SIMPLEPATH,
+            'SIMPLE_PATH': SIMPLEPATH,
+            'SIMPLE_QSYS': "local",
             'PATH': PATH,
         },
             position=pwutils.Environ.BEGIN)
