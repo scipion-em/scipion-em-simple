@@ -32,7 +32,7 @@ from pyworkflow.utils.path import cleanPath, makePath, moveFile
 from pyworkflow.protocol.constants import STEPS_PARALLEL
 import simple
 
-class ProtUnblur(ProtMicrographs):
+class ProtUnblurSimple(ProtMicrographs):
     """
     Maximising the SNR of the integrated movie
     

@@ -97,6 +97,8 @@ class ProtRef3D(em.ProtRefine3D):
         # partName = os.path.splitext(partName)[0]
         SamplingRate = self.inputParticles.get().getSamplingRate()
         kV = self.inputParticles.get().getAcquisition().getVoltage()
+        if kV is None: # For simulated data
+            kV=300
 
         maskRadius = self.mask.get()
         if maskRadius < 0:

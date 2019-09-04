@@ -26,7 +26,7 @@ import os
 
 import pyworkflow.tests as tests
 
-from simple.protocols import ProtUnblur
+from simple.protocols import ProtUnblurSimple
 from pyworkflow.em.protocol import ProtImportMovies
 
 class TestUnblurBase(tests.BaseTest):
@@ -60,7 +60,7 @@ class TestUnblur(TestUnblurBase):
         return prot1
         
     def test_Unblur(self):
-        prot2 = self.newProtocol(ProtUnblur)
+        prot2 = self.newProtocol(ProtUnblurSimple)
         prot2.inputMovies.set(self.protImport.outputMovies)
         self.launchProtocol(prot2)
         
