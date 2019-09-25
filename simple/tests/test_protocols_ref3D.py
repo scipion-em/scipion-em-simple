@@ -77,7 +77,7 @@ class TestRef3D(TestRef3DBase):
         return prot1
         
     def test_Ref3D(self):
-        prot2 = self.newProtocol(ProtRef3D, maxIter=3, symmetry="c1")
+        prot2 = self.newProtocol(ProtRef3D, maxIter=1, symmetry="c1")
         prot2.inputVol.set(self.protImportVol.outputVolume)
         prot2.inputParticles.set(self.protImportParticles.outputParticles)
         self.launchProtocol(prot2)

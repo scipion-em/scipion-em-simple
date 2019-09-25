@@ -53,6 +53,30 @@ class Prime3DMaskWizard(ParticleMaskRadiusWizard):
         _label = params['label']
         ParticleMaskRadiusWizard.show(self, form, _value, _label, UNIT_PIXEL)
 
+class Init3DGaussianVolumesWizard(GaussianVolumesWizard):
+    _targets = [(ProtInit3D, ['lp'])]
+
+    def _getParameters(self, protocol):
+
+        label, value = self._getInputProtocol(self._targets, protocol)
+
+        protParams = {}
+        protParams['input']= protocol.inputClasses
+        protParams['label']= label
+        protParams['value']= value
+        return protParams
+
+    def _getProvider(self, protocol):
+        _objs = self._getParameters(protocol)['input']
+        return GaussianVolumesWizard._getListProvider(self, _objs)
+
+    def show(self, form):
+        params = self._getParameters(form.protocol)
+        _value = params['value']
+        _label = params['label']
+        GaussianVolumesWizard.show(self, form, _value, _label, UNIT_PIXEL_FOURIER)
+
+
 class Ref3DMaskWizard(ParticleMaskRadiusWizard):
     _targets = [(ProtRef3D, ['mask'])]
 

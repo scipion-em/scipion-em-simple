@@ -33,7 +33,8 @@ from os.path import exists, join
 from pyworkflow.protocol.params import EnumParam, NumericRangeParam, LabelParam, IntParam, FloatParam
 from pyworkflow.protocol.constants import LEVEL_ADVANCED
 from pyworkflow.viewer import DESKTOP_TKINTER, WEB_DJANGO, ProtocolViewer
-from pyworkflow.em.viewer import ObjectView, DataView, ChimeraClientView
+from pyworkflow.em.viewers.views import ObjectView, DataView
+from pyworkflow.em.viewers.viewer_chimera import ChimeraClientView
 import pyworkflow.em.showj as showj
 from xmipp3.viewers.plotter import XmippPlotter
 

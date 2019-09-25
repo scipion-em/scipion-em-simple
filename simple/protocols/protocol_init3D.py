@@ -25,7 +25,7 @@
 import os, glob, shutil
 import pyworkflow.em as em
 from pyworkflow import VERSION_1_1
-from pyworkflow.protocol.params import IntParam, PointerParam, StringParam, EnumParam
+from pyworkflow.protocol.params import IntParam, PointerParam, StringParam, FloatParam
 # from pyworkflow.em.protocol.protocol_micrographs import ProtMicrographs
 from pyworkflow.utils.path import cleanPath, makePath, moveFile
 from pyworkflow.protocol.constants import LEVEL_ADVANCED
@@ -51,6 +51,8 @@ class ProtInit3D(em.ProtInitialVolume):
                       important=True, pointerClass='SetOfClasses2D, SetOfAverages',
                       help="Select either a SetOfClasses2D or a SetOfAverages from the project.")
         form.addParam('mask', IntParam, default=80, label='Mask radius', help='Mask radius (in Pixels).')
+        form.addParam('lp', FloatParam, default=0.5, expertLevel=LEVEL_ADVANCED,
+                      label='Low pass limit', help='Low pass limit in normalized frequency (<0.5)')
         form.addParam('symmetry', StringParam, default='c5', important=True, label='Point-group symmetry',
                       help='cn or dn. For icosahedral viruses, use c5. \n If no symmetry is present, give c1.')
         form.addParallelSection(threads=4, mpi=0)
@@ -76,8 +78,9 @@ class ProtInit3D(em.ProtInitialVolume):
         makePath(tmpDir)
 
         partitions = 1
-        params3D = ' prg=initial_3Dmodel msk=%d pgrp=%s nparts=%d nthr=%d eo=no' % (self.mask.get(), self.symmetry.get(),
-                                                                               partitions, self.numberOfThreads.get())
+        params3D = ' prg=initial_3Dmodel msk=%d pgrp=%s lpstart=%f lpstop=%f nparts=%d nthr=%d' % \
+                   (self.mask.get(), self.symmetry.get(), self.lp.get(), self.lp.get(), partitions,
+                    self.numberOfThreads.get())
         paramsImp = ' prg=import_cavgs stk=%s smpd=%f' %(os.path.abspath(partFile), SamplingRate)
 
         self.runJob(simple.Plugin.sim_exec(), 'prg=new_project projname=temp', cwd=os.path.abspath(tmpDir),

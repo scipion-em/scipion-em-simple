@@ -86,8 +86,8 @@ class ProtRef3D(em.ProtRefine3D):
         inputVol = self.inputVol.get()
         fnVol = os.path.abspath(self._getTmpPath("recvol_state_00.mrc"))
 
-        copyFile(self._getTmpPath("recvol_state_00.mrc"),self._getTmpPath("recvol_state_00_even.mrc"))
-        copyFile(self._getTmpPath("recvol_state_00.mrc"),self._getTmpPath("recvol_state_00_odd.mrc"))
+        # copyFile(self._getTmpPath("recvol_state_00.mrc"),self._getTmpPath("recvol_state_00_even.mrc"))
+        # copyFile(self._getTmpPath("recvol_state_00.mrc"),self._getTmpPath("recvol_state_00_odd.mrc"))
 
         tmpDir = self._getTmpPath("volume")
         makePath(tmpDir)
@@ -108,7 +108,7 @@ class ProtRef3D(em.ProtRefine3D):
 
         partitions = 1
 
-        paramsRef = ' prg=refine3D vol1=%s msk=%d pgrp=%s lp=%f eo=yes nparts=%d nthr=%d' \
+        paramsRef = ' prg=refine3D vol1=%s msk=%d pgrp=%s lp=%f nparts=%d nthr=%d' \
                     % (fnVol, maskRadius, self.symmetry.get(), lpCutoff, partitions, self.numberOfThreads.get())
 
         paramsOri = 'prg=print_project_field oritype=ptcl3D > oritab.txt'
@@ -137,10 +137,10 @@ class ProtRef3D(em.ProtRefine3D):
         # Move output files to ExtraPath and rename them properly
         lastIter = self.getLastIteration()
         mvRoot = os.path.join(tmpDir,"temp","2_refine3D")
-        moveFile(os.path.join(mvRoot,"recvol_state01_iter%03d.mrc" %lastIter),self._getExtraPath("volume.mrc"))
+        moveFile(os.path.join(mvRoot,"recvol_state01.mrc"),self._getExtraPath("volume.mrc"))
         moveFile(os.path.join(mvRoot,"recvol_state01_iter%03d_pproc.mrc" %lastIter),self._getExtraPath("volume_pproc.mrc"))
-        moveFile(os.path.join(mvRoot,"recvol_state01_iter%03d_even.mrc" %lastIter),self._getExtraPath("volume_even.mrc"))
-        moveFile(os.path.join(mvRoot,"recvol_state01_iter%03d_odd.mrc" %lastIter),self._getExtraPath("volume_odd.mrc"))
+        moveFile(os.path.join(mvRoot,"recvol_state01_even.mrc"),self._getExtraPath("volume_even.mrc"))
+        moveFile(os.path.join(mvRoot,"recvol_state01_odd.mrc"),self._getExtraPath("volume_odd.mrc"))
         moveFile(os.path.join(tmpDir,"temp","oritab.txt"), self._getExtraPath( "oritab.txt"))
         for i in range(1,lastIter+1):
             moveFile(os.path.join(mvRoot,"RESOLUTION_STATE01_ITER%03d"%i),self._getExtraPath("fsc%03d.txt"%i))
@@ -212,7 +212,7 @@ class ProtRef3D(em.ProtRefine3D):
         pattern = self._getTmpPath(os.path.join("volume","temp","2_refine3D","recvol_state01_iter%03d.mrc"))
         while os.path.exists(pattern % lastIter):
             lastIter += 1
-        return lastIter - 1
+        return lastIter
 
     def getLastIterationExtra(self):
         lastIter = 1

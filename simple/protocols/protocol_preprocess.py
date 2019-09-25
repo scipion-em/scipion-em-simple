@@ -94,7 +94,7 @@ class ProtUnblurSimple(ProtMicrographs):
         #Move output files to ExtraPath and rename them properly
         mvRoot = os.path.join(tmpDir+'/temp/2_preprocess', mvName)
         moveFile(mvRoot+"_intg.mrc",self._getExtraPath(mvName+".mrc"))
-        moveFile(mvRoot+"_pspec.mrc",self._getExtraPath(mvName+"_psd.mrc"))
+        moveFile(os.path.join(tmpDir+"/temp/2_preprocess","pspec.mrc"),self._getExtraPath(mvName+"_psd.mrc"))
         cleanPath(tmpDir)
 
     def createOutputStep(self):

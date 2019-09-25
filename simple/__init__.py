@@ -79,7 +79,7 @@ class Plugin(pyworkflow.em.Plugin):
         simple_commands = [('mkdir build; cd build; cmake ../; make -j install', ['build/bin/gui'])]
 
         env.addPackage('SIMPLE', version='3.0',
-                        tar='SIMPLE3.0.tgz',
+                        tar='SIMPLE3.0.tar.gz',
                         commands=simple_commands,
                         default=True)
 
