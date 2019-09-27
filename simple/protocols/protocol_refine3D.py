@@ -209,8 +209,8 @@ class ProtRef3D(em.ProtRefine3D):
     def getLastIteration(self):
         lastIter = 1
         # pattern = self._getTmpPath('volume/temp/2_refine3D/recvol_state01_iter%03d.mrc')
-        pattern = self._getTmpPath(os.path.join("volume","temp","2_refine3D","recvol_state01_iter%03d.mrc"))
-        while os.path.exists(pattern % lastIter):
+        pattern = self._getTmpPath(os.path.join("volume","temp","2_refine3D","recvol_state01_iter%03d_pproc.mrc"))
+        while not os.path.exists(pattern % lastIter):
             lastIter += 1
         return lastIter
 
