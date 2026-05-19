@@ -37,7 +37,139 @@ from simple.constants import *
 
 
 class ProtPrime(em.ProtInitialVolume):
-    """ Produces one or several initial volumes using simple prime """
+    """
+    Produces one or several initial 3D volumes from two-dimensional class averages
+    or particle averages using PRIME-based ab initio reconstruction approaches.
+
+    AI Generated:
+
+    PRIME Initial Volume Reconstruction (ProtPrime) - User Manual
+        Overview
+
+        The PRIME Initial Volume Reconstruction protocol generates one or more
+        starting three-dimensional maps directly from a set of two-dimensional
+        class averages or particle averages. Its primary objective is to provide
+        biologically meaningful initial models that can serve as starting points
+        for subsequent refinement and high-resolution reconstruction workflows.
+
+        In cryo-EM studies, obtaining a reliable initial volume is often one of
+        the most important steps in the reconstruction process. A suitable starting
+        model helps guide refinement toward the correct structural solution while
+        reducing the risk of convergence to incorrect maps. This protocol is
+        particularly useful when no prior structural model is available or when an
+        independent reconstruction is desired to minimize model bias.
+
+        Inputs and General Workflow
+
+        The protocol requires a collection of two-dimensional class averages or
+        particle averages representing different views of the biological specimen.
+        These inputs should ideally contain clear structural features and provide
+        broad angular coverage of the particle. Better class averages generally
+        lead to more reliable initial reconstructions.
+
+        During processing, the protocol analyzes the supplied images and estimates
+        one or more plausible three-dimensional structures that explain the observed
+        projections. The resulting maps can then be evaluated visually and used as
+        starting points for downstream refinement procedures.
+
+        Symmetry Considerations
+
+        An important aspect of initial model generation is the specification of
+        particle symmetry. When the biological assembly possesses known rotational
+        or dihedral symmetry, providing the appropriate symmetry group can
+        significantly improve reconstruction quality and stability.
+
+        For highly symmetric particles such as viral capsids, applying the correct
+        symmetry can greatly enhance signal recovery and facilitate convergence.
+        However, incorrect symmetry assignment may introduce structural artifacts
+        and distort biologically relevant features. When uncertainty exists, it is
+        often safer to begin with the lowest symmetry consistent with current
+        biological knowledge.
+
+        Multiple Initial Models
+
+        The protocol can generate more than one candidate volume during a single
+        execution. This capability is especially valuable when the dataset may
+        contain structural heterogeneity or when several alternative solutions are
+        plausible.
+
+        Producing multiple candidate maps allows users to compare independent
+        reconstructions and identify the most biologically meaningful result.
+        Different initial volumes may represent alternative conformations,
+        different reconstruction hypotheses, or varying levels of structural
+        detail. Careful inspection and validation remain essential before
+        proceeding to refinement.
+
+        Resolution and Filtering
+
+        Initial models are intended to capture the overall architecture of the
+        particle rather than high-resolution atomic detail. The protocol provides
+        mechanisms to control the effective resolution of the reconstructed maps,
+        either through user-defined limits or through automatic estimation.
+
+        Conservative filtering is often beneficial during early stages of analysis
+        because it reduces the influence of noise and emphasizes robust structural
+        features. Users should interpret fine details cautiously, as initial
+        reconstructions are primarily intended to establish global shape and
+        orientation information.
+
+        Particle Inclusion and Data Quality
+
+        The protocol can operate using all available particle information or a
+        selected fraction of the dataset. Restricting reconstruction to a subset
+        of particles may sometimes improve robustness when large datasets contain
+        significant variability or outliers.
+
+        From a biological perspective, the quality of the resulting volume depends
+        strongly on the quality of the input classes. Well-defined classes that
+        represent consistent particle views generally produce more reliable initial
+        models than noisy or poorly aligned averages.
+
+        Molecular Weight Constraints
+
+        When approximate molecular weight information is available, it can be used
+        as an additional source of biological knowledge during reconstruction. Such
+        constraints may help guide the generation of physically realistic maps and
+        improve the consistency of the resulting structures.
+
+        Nevertheless, inaccurate molecular weight estimates can bias the outcome.
+        Users should apply such constraints only when supported by independent
+        biochemical or structural evidence.
+
+        Outputs and Their Interpretation
+
+        Upon completion, the protocol produces either a single reconstructed volume
+        or a collection of candidate volumes. These maps represent low- to
+        intermediate-resolution structural hypotheses derived from the supplied
+        two-dimensional information.
+
+        The generated volumes should be examined carefully for overall shape,
+        symmetry consistency, and biological plausibility. Independent validation,
+        comparison with known structural information, and subsequent refinement are
+        recommended before drawing biological conclusions.
+
+        Practical Recommendations
+
+        For most applications, it is advisable to begin with high-quality class
+        averages that span a wide range of particle orientations. When prior
+        symmetry information is known with confidence, incorporating it can improve
+        reconstruction quality. If uncertainty exists regarding the correct
+        structural solution, generating multiple candidate volumes is often a
+        valuable strategy.
+
+        Initial models should be regarded as starting points rather than final
+        structures. Their primary purpose is to provide a reliable foundation for
+        subsequent refinement and validation steps within the cryo-EM workflow.
+
+        Final Perspective
+
+        Initial volume generation is a critical bridge between two-dimensional
+        image analysis and three-dimensional structural interpretation. The quality
+        and biological realism of the resulting models can strongly influence all
+        downstream processing. Careful selection of input classes, thoughtful use
+        of symmetry information, and rigorous evaluation of candidate volumes are
+        essential for obtaining trustworthy structural reconstructions.
+    """
     _label = 'prime'
 
     # --------------------------- DEFINE param functions ----------------------
