@@ -28,6 +28,7 @@ import os
 
 import pyworkflow.em
 import pyworkflow.utils as pwutils
+from pyworkflow import Config
 
 from .constants import *
 
@@ -39,11 +40,34 @@ _references = ['Elmlund2013']
 class Plugin(pyworkflow.em.Plugin):
     _homeVar = SIMPLE_HOME
     _pathVars = [SIMPLE_HOME]
-    _supportedVersions = ['3.0']
+    _supportedVersions = VERSIONS
 
     @classmethod
     def _defineVariables(cls):
-        cls._defineEmVar(SIMPLE_HOME, 'SIMPLE-3.0')
+        cls._defineEmVar(SIMPLE_HOME, DEFAULT_HOME)
+        cls._defineVar(SIMPLE_ENV_ACTIVATION, DEFAULT_ACTIVATION_CMD)
+
+    @classmethod
+    def getDependencies(cls):
+        """Return required programs for SIMPLE installation."""
+        condaActivationCmd = cls.getCondaActivationCmd()
+        neededProgs = ['git']
+        if not condaActivationCmd:
+            neededProgs.append('conda')
+        return neededProgs
+
+    @classmethod
+    def getSimpleEnvActivation(cls):
+        """Remove scipion home and activate the conda environment."""
+        activation = cls.getVar(SIMPLE_ENV_ACTIVATION)
+        scipionHome = Config.SCIPION_HOME + os.path.sep
+        return activation.replace(scipionHome, "", 1)
+
+    @classmethod
+    def getActivationCmd(cls):
+        """Return the activation command."""
+        return '%s %s' % (cls.getCondaActivationCmd(),
+                          cls.getSimpleEnvActivation())
 
     @classmethod
     def getEnviron(cls):
@@ -75,12 +99,30 @@ class Plugin(pyworkflow.em.Plugin):
 
     @classmethod
     def defineBinaries(cls, env):
+        condaPackages = ' '.join(SIMPLE_CONDA_PACKAGES)
+        pipPackages = ' '.join(SIMPLE_PIP_PACKAGES)
+        pipPackagesLinux = ' '.join(SIMPLE_PIP_PACKAGES_LINUX)
 
-        simple_commands = [('mkdir build; cd build; cmake ../; make -j install', ['build/bin/gui'])]
+        for ver in cls._supportedVersions:
+            gitRef = SIMPLE_GIT_REFS[ver]
+            envName = f'simple-{ver}'
+            simple_commands = [(
+                ' '.join([
+                    cls.getCondaActivationCmd(),
+                    f'(conda run -n {envName} python -V >/dev/null 2>&1 || conda create -y -n {envName} -c conda-forge {condaPackages}) &&',
+                    f'conda run -n {envName} python -m pip install --no-input --no-cache-dir {pipPackages} &&',
+                    f'conda run -n {envName} bash -lc "if [ \"$(uname)\" = \"Linux\" ]; then python -m pip install --no-input --no-cache-dir {pipPackagesLinux}; fi" &&',
+                    f'cd .. && (test -d SIMPLE-{ver} || git clone {SIMPLE_GIT_URL} SIMPLE-{ver}) &&',
+                    f'git -C SIMPLE-{ver} fetch --all --tags && git -C SIMPLE-{ver} checkout {gitRef} &&',
+                    f'conda run -n {envName} bash -lc "cd SIMPLE-{ver} && mkdir -p build && cd build && cmake ../ && make -j install"',
+                ]),
+                ['build/bin/gui']
+            )]
 
-        env.addPackage('SIMPLE', version='3.0',
-                        tar='SIMPLE3.0.tar.gz',
-                        commands=simple_commands,
-                        default=True)
+            env.addPackage('SIMPLE', version=ver,
+                           tar='void.tgz',
+                           commands=simple_commands,
+                           neededProgs=cls.getDependencies(),
+                           default=ver == SIMPLE_DEFAULT_VER_NUM)
 
 pyworkflow.em.Domain.registerPlugin(__name__)
