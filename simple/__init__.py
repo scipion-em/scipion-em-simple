@@ -28,7 +28,7 @@ import os
 
 import pwem
 import pyworkflow.utils as pwutils
-from pyworkflow import Config
+from pyworkflow import Config, SPA
 
 from constants import *
 
@@ -39,6 +39,8 @@ class Plugin(pwem.Plugin):
     _homeVar = SIMPLE_HOME
     _pathVars = [SIMPLE_HOME]
     _supportedVersions = VERSIONS
+    _url = "https://github.com/scipion-em/scipion-em-simple"
+    _processingField = [SPA]
 
     @classmethod
     def _defineVariables(cls):
