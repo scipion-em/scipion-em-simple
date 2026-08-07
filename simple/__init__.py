@@ -124,5 +124,3 @@ class Plugin(pyworkflow.em.Plugin):
                            commands=simple_commands,
                            neededProgs=cls.getDependencies(),
                            default=ver == SIMPLE_DEFAULT_VER_NUM)
-
-pyworkflow.em.Domain.registerPlugin(__name__)
