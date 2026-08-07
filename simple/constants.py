@@ -28,11 +28,10 @@
 SIMPLE_HOME = 'SIMPLE_HOME'
 
 # Supported versions
-V3_0_0 = '3.0.0'
 V3_1_BETA = '3.1-beta'
 V4_0_0 = '4.0.0'
 
-VERSIONS = [V3_0_0, V3_1_BETA, V4_0_0]
+VERSIONS = [V3_1_BETA, V4_0_0]
 SIMPLE_DEFAULT_VER_NUM = V4_0_0
 
 # Home folder default for selected version
@@ -45,7 +44,6 @@ SIMPLE_ENV_ACTIVATION = 'SIMPLE_ENV_ACTIVATION'
 # Git source per supported version
 SIMPLE_GIT_URL = 'https://github.com/hael/SIMPLE.git'
 SIMPLE_GIT_REFS = {
-	V3_0_0: 'v3.0.0',
 	V3_1_BETA: 'v3.1-beta',
 	V4_0_0: '3318d60',
 }
