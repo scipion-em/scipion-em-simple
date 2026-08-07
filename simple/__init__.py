@@ -26,18 +26,16 @@
 
 import os
 
-import pyworkflow.em
+import pwem
 import pyworkflow.utils as pwutils
 from pyworkflow import Config
 
-from .constants import *
-
+from constants import *
 
 _logo = "simple_logo.png"
 _references = ['Elmlund2013']
 
-
-class Plugin(pyworkflow.em.Plugin):
+class Plugin(pwem.Plugin):
     _homeVar = SIMPLE_HOME
     _pathVars = [SIMPLE_HOME]
     _supportedVersions = VERSIONS
