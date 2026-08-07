@@ -5,6 +5,11 @@
 .classpath
 .idea
 
+#### VS Code
+.vscode/
+.history/
+*.code-workspace
+
 #### Python
 build/
 dist/
