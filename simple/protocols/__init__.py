@@ -24,8 +24,7 @@
 # *
 # **************************************************************************
 
-from .protocol_cluster2D import ProtCluster2D
-from .protocol_init3D import ProtInit3D
-from .protocol_symmetry import ProtSym
-from .protocol_refine3D import ProtRef3D
-from .protocol_cluster3D import ProtCluster3D
+from .protocol_abinitio2D import ProtSimpleAbInitio2D
+from .protocol_symmetry import ProtSimpleSymmetryTest
+from .protocol_abinitio3D import ProtSimpleAbInitio3D
+from .protocol_refine3D import ProtSimpleNURef3D

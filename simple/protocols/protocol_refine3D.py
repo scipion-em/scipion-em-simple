@@ -34,7 +34,7 @@ import simple
 from pyworkflow.em.data import Transform
 import numpy as np
 
-class ProtRef3D(em.ProtRefine3D):
+class ProtSimpleNURef3D(em.ProtRefine3D):
     """
     3D Refinement
     

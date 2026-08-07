@@ -30,7 +30,7 @@ from pyworkflow.protocol.constants import LEVEL_ADVANCED
 
 import simple
 
-class ProtSym(ProtMicrographs):
+class ProtSimpleSymmetryTest(ProtMicrographs):
     """
     Maximising the SNR of the integrated movie
     
