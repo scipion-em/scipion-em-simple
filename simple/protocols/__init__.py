@@ -24,7 +24,6 @@
 # *
 # **************************************************************************
 
-from .protocol_preprocess import ProtUnblurSimple
 from .protocol_cluster2D import ProtCluster2D
 from .protocol_init3D import ProtInit3D
 from .protocol_symmetry import ProtSym
