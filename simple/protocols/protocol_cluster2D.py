@@ -23,13 +23,11 @@
 # **************************************************************************
 
 import os
-from pyworkflow import VERSION_1_1
 from pyworkflow.protocol.params import IntParam, PointerParam
 from pyworkflow.em.protocol import ProtClassify2D
 from pyworkflow.utils.path import cleanPath, makePath, moveFile
 from pyworkflow.em.convert import ImageHandler
 from pyworkflow.protocol.constants import LEVEL_ADVANCED
-from pyworkflow.em.data import SetOfParticles
 import simple
 
 class ProtCluster2D(ProtClassify2D):

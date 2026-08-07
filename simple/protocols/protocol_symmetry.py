@@ -23,7 +23,7 @@
 # **************************************************************************
 
 import os
-from pyworkflow.protocol.params import PointerParam, IntParam, StringParam, FileParam, FloatParam
+from pyworkflow.protocol.params import PointerParam, IntParam, FloatParam
 from pyworkflow.em.protocol.protocol_micrographs import ProtMicrographs
 from pyworkflow.utils.path import cleanPath, makePath, moveFile
 from pyworkflow.protocol.constants import LEVEL_ADVANCED

@@ -22,12 +22,11 @@
 # *
 # **************************************************************************
 
-import os, glob, shutil
+import os
 import pyworkflow.em as em
-from pyworkflow import VERSION_1_1
 from pyworkflow.protocol.params import IntParam, PointerParam, StringParam, FloatParam
 # from pyworkflow.em.protocol.protocol_micrographs import ProtMicrographs
-from pyworkflow.utils.path import cleanPath, makePath, moveFile
+from pyworkflow.utils.path import makePath, moveFile
 from pyworkflow.protocol.constants import LEVEL_ADVANCED
 import simple
 

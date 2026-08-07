@@ -24,8 +24,6 @@
 
 import os
 #import pyworkflow.em as em
-from pyworkflow import VERSION_1_1
-import pyworkflow.protocol.params as param
 from pyworkflow.protocol.params import PointerParam
 from pyworkflow.em.protocol.protocol_micrographs import ProtMicrographs
 from pyworkflow.utils.path import cleanPath, makePath, moveFile
