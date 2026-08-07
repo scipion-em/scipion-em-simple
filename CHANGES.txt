@@ -1,2 +1,9 @@
-14-February-2019 - First implementation of Simple 3.0 in Scipion
+4.0.0 (August 2026)
+  Users:
+    - Deprecate all old versions of SIMPLE (now 4.0.0 is the only supported one)
+    - Integrate the new polar 3D ab-initio, new 2D ab-initio, new 3D non-uniform refinement
+  Developers:
+    - Installation now creates a conda env with the required packages and compiles
+            SIMPLE 4.0 from source
 
+14-February-2019 - First implementation of Simple 3.0 in Scipion
